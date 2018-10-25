@@ -27,7 +27,7 @@ def new_game():
                 all_vals.append(next_val)
                 value_found = True
             else:
-                next_val = random.randrange(1,11)
+                next_val = random.randrange(min,max)
 
         # Case 1: User guesses high
         if user_ans.lower() in {"hi", "high", "h", "higher"}:
