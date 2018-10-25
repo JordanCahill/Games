@@ -27,7 +27,19 @@ def new_game():
                 all_vals.append(next_val)
                 value_found = True
             else:
-                next_val = random.randrange(min,max)
+                # Case: Player runs out of letters
+                if len(all_vals) == (max - min):
+                    score = score + 1
+                    print("Congratulations! You won!")
+                    # Display users score and ask if they'd like to play again
+                    print("Your score was: " + str(score))
+                    choice = input("Would you like to play again? (Y/N) ")
+                    if choice.lower() in {"yes", "y", "ya"}:
+                        new_game()
+                    else:
+                        print("Thanks for playing!")
+                else:
+                    next_val = random.randrange(min,max)
 
         # Case 1: User guesses high
         if user_ans.lower() in {"hi", "high", "h", "higher"}:
