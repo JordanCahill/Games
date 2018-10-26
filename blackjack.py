@@ -1,6 +1,7 @@
 import os
 import random
 
+# TODO: Possibly implement suits using Unicode chars ♠♥♦♣
 deck = ["A",2,3,4,5,6,7,8,9,10,"J","Q","K"] * 4
 
 
@@ -12,10 +13,43 @@ def deal(deck):
     return hand
 
 
+def hit(hand):
+    card=deck.pop()
+    hand.append(card)
+    return(hand)
+
+
+def clear():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+
+def print_scores(dealer_hand, player_hand):
+    print("The dealer has: " + str(dealer_hand) + " giving a score of: " + str(get_hand_value(dealer_hand)))
+    print("You have: " + str(player_hand) + " giving a score of: " + str(get_hand_value(player_hand)))
+
+
+def play_again():
+    again = input("Do you want to play again? (Y/N) : ").lower()
+    if again in {"y", "yes"}:
+        game()
+    else:
+        print("Thanks for playing..")
+        exit()
+
+
+def check_blackjack(dealer_hand, player_hand):
+    if get_hand_value(player_hand) == 21:
+        return 1
+    elif get_hand_value(dealer_hand) == 21:
+        return 2
+    else:
+        return 0
+
+
 def get_hand_value(hand):
     value = 0
     for card in hand:
-        if card == "J" or card == "Q" or card == "K":
+        if card in {"J", "Q", "K"}:
             value += 10
         elif card == "A":
             if value > 10:
@@ -27,25 +61,48 @@ def get_hand_value(hand):
     return value
 
 
-def hit(hand):
-    card=deck.pop()
-    hand.append(card)
-    return(hand)
+def evaluate(dealer_hand, player_hand):
+    if get_hand_value(player_hand) == 21:
+        print("Blackjack! You win!")
+    elif get_hand_value(dealer_hand) > 21:
+        print("Dealer busts. You win!")
+    elif get_hand_value(player_hand) < get_hand_value(dealer_hand):
+        print("Hard luck. You lose.")
+    elif get_hand_value(player_hand) > get_hand_value(dealer_hand):
+        print("Congratulations. You win")
+    play_again()
 
-clear = lambda: os.system('cls')
-#def clear():
-    #os.system('cls' if os.name == 'nt' else 'clear')
 
-def print_scores(dealer_hand, player_hand):
-    clear()
-    print(dealer_hand)
+def game():
+    random.shuffle(deck)
+    dealer_hand = deal(deck)
+    player_hand = deal(deck)
+    player_turn = True
 
-random.shuffle(deck)
-for i in range(1,10):
-    hand = deal(deck)
-    print(hand)
-    print(get_hand_value(hand))
-    hand=hit(hand)
-    print(hand)
-    print(get_hand_value(hand))
-print_scores(hand,hand)
+    # Case where player receives blackjack in first hand, they win
+    if check_blackjack(dealer_hand,player_hand) == 1:
+        player_turn = False
+        print("Blackjack, you win!")
+        play_again()
+
+    while player_turn:
+        print_scores(dealer_hand, player_hand)
+        if get_hand_value(player_hand) > 21:
+            print("Bust! You lose..")
+            play_again()
+        choice = input("Would you like to hit or stand? (Enter [H]/[S]) ").lower()
+        if choice in {"h", "hit"}:
+            player_hand = hit(player_hand)
+        else:
+            player_turn = False
+
+    while get_hand_value(dealer_hand) < 17:
+        print("Dealer draws a card..")
+        dealer_hand = hit(dealer_hand)
+        print_scores(dealer_hand, player_hand)
+
+    evaluate(dealer_hand, player_hand)
+
+
+if __name__ == '__main__':
+    game()
