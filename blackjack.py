@@ -127,7 +127,7 @@ def check_blackjack(dealer_hand, player_hand):
 def get_hand_value(hand):
     value = 0
     for card in hand:
-        for i in range(2,10):
+        for i in range(2, 11):
             if str(i) in card:
                 value += i
         if ("J" in card) or ("Q" in card) or ("K" in card):
